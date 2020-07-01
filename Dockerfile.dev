@@ -1,0 +1,14 @@
+FROM node:12.16.1
+
+ADD ./ /home/app
+WORKDIR /home/app
+
+# Copy package.json first and yarn install to take advantage of layer caching
+COPY package.json .
+RUN yarn install
+
+ENV NODE_ENV="development"
+ENV PORT="4000"
+
+EXPOSE 4000
+CMD yarn start

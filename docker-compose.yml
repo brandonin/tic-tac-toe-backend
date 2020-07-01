@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+    db:
+        image: postgres:12
+        environment:
+            POSTGRES_DB: tictactoe_development
+            POSTGRES_USER: user001
+            POSTGRES_PASSWORD: 1Password
+        volumes:
+            - tictactoeDB:/var/lib/postgres
+        networks:
+            - tictactoe_default
+        ports:
+            - "${DB_PORT:-5432}:5432"
+
+    api:
+        image: tictactoeapi:latest
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        ports:
+            - 4000:4000
+            - 9229:9229
+        networks:
+            - tictactoe_default
+        volumes:
+            # map directories to docker container
+            # last entires is to ignore node_modules
+            - ./:/home/app
+            - /home/app/node_modules
+        environment:
+            TS_NODE_TRANSPILE_ONLY: 'true'
+        depends_on:
+            - db
+        environment:
+            TS_NODE_TRANSPILE_ONLY: 'true'
+        # tty: true
+        # stdin_open: true
+
+volumes:
+    tictactoeDB:
+networks:
+    tictactoe_default:
+        driver: bridge

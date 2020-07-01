@@ -1,0 +1,11 @@
+dist
+package-lock.json
+node_modules
+.idea
+*.log
+.env*
+
+# ignore .vscode/ files except launch.json
+.vscode/*
+!.vscode/launch.json
+
