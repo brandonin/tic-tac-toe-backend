@@ -170,7 +170,7 @@ const Mutation = mutationType({
 const generateArtifacts = Boolean(process.env.GENERATE_ARTIFACTS);
 
 export const schemaDef = makeSchema({
-    types: [Query, Mutation, User, Game, Score, Board, Square],
+    types: [Query, Mutation, User, Game, Score, Board, Square, Initialize, Reset],
     typegenAutoConfig: {
         sources: [
             {

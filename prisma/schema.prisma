@@ -30,7 +30,6 @@ model User {
     game                Game?                @relation(fields: [gameId], references: [id])
     gameId              String?        
     score               Score
-    whosTurnOf          Game                 @relation("WhosTurn")
 
     // system
     createdAt           DateTime            @default(now())

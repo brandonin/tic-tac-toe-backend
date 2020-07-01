@@ -64,6 +64,18 @@ input BoardUpsertWithoutSquaresInput {
   update: BoardUpdateWithoutSquaresDataInput!
 }
 
+input BoardWhereInput {
+  AND: [BoardWhereInput!]
+  createdAt: DateTimeFilter
+  game: GameWhereInput
+  gameId: StringFilter
+  id: StringFilter
+  NOT: [BoardWhereInput!]
+  OR: [BoardWhereInput!]
+  squares: SquareFilter
+  updatedAt: DateTimeFilter
+}
+
 input BoardWhereUniqueInput {
   id: String
 }
@@ -94,7 +106,12 @@ input GameCreateInput {
   id: String
   updatedAt: DateTime
   users: UserCreateManyWithoutGameInput
-  whosTurn: UserCreateOneWithoutWhosTurnOfInput!
+  whosTurn: UserCreateOneWithoutGameInput!
+}
+
+input GameCreateManyWithoutWhosTurnInput {
+  connect: [GameWhereUniqueInput!]
+  create: [GameCreateWithoutWhosTurnInput!]
 }
 
 input GameCreateOneWithoutBoardInput {
@@ -107,17 +124,12 @@ input GameCreateOneWithoutUsersInput {
   create: GameCreateWithoutUsersInput
 }
 
-input GameCreateOneWithoutWhosTurnInput {
-  connect: GameWhereUniqueInput
-  create: GameCreateWithoutWhosTurnInput
-}
-
 input GameCreateWithoutBoardInput {
   createdAt: DateTime
   id: String
   updatedAt: DateTime
   users: UserCreateManyWithoutGameInput
-  whosTurn: UserCreateOneWithoutWhosTurnOfInput!
+  whosTurn: UserCreateOneWithoutGameInput!
 }
 
 input GameCreateWithoutUsersInput {
@@ -125,7 +137,7 @@ input GameCreateWithoutUsersInput {
   createdAt: DateTime
   id: String
   updatedAt: DateTime
-  whosTurn: UserCreateOneWithoutWhosTurnOfInput!
+  whosTurn: UserCreateOneWithoutGameInput!
 }
 
 input GameCreateWithoutWhosTurnInput {
@@ -136,13 +148,53 @@ input GameCreateWithoutWhosTurnInput {
   users: UserCreateManyWithoutGameInput
 }
 
+input GameFilter {
+  every: GameWhereInput
+  none: GameWhereInput
+  some: GameWhereInput
+}
+
+input GameScalarWhereInput {
+  AND: [GameScalarWhereInput!]
+  createdAt: DateTimeFilter
+  id: StringFilter
+  NOT: [GameScalarWhereInput!]
+  OR: [GameScalarWhereInput!]
+  updatedAt: DateTimeFilter
+  users: UserFilter
+  whosTurnId: StringFilter
+}
+
 input GameUpdateInput {
   board: BoardUpdateOneRequiredWithoutGameInput
   createdAt: DateTime
   id: String
   updatedAt: DateTime
   users: UserUpdateManyWithoutGameInput
-  whosTurn: UserUpdateOneRequiredWithoutWhosTurnOfInput
+  whosTurn: UserUpdateOneRequiredWithoutGameInput
+}
+
+input GameUpdateManyDataInput {
+  createdAt: DateTime
+  id: String
+  updatedAt: DateTime
+}
+
+input GameUpdateManyWithoutWhosTurnInput {
+  connect: [GameWhereUniqueInput!]
+  create: [GameCreateWithoutWhosTurnInput!]
+  delete: [GameWhereUniqueInput!]
+  deleteMany: [GameScalarWhereInput!]
+  disconnect: [GameWhereUniqueInput!]
+  set: [GameWhereUniqueInput!]
+  update: [GameUpdateWithWhereUniqueWithoutWhosTurnInput!]
+  updateMany: [GameUpdateManyWithWhereNestedInput!]
+  upsert: [GameUpsertWithWhereUniqueWithoutWhosTurnInput!]
+}
+
+input GameUpdateManyWithWhereNestedInput {
+  data: GameUpdateManyDataInput!
+  where: GameScalarWhereInput!
 }
 
 input GameUpdateOneRequiredWithoutBoardInput {
@@ -150,13 +202,6 @@ input GameUpdateOneRequiredWithoutBoardInput {
   create: GameCreateWithoutBoardInput
   update: GameUpdateWithoutBoardDataInput
   upsert: GameUpsertWithoutBoardInput
-}
-
-input GameUpdateOneRequiredWithoutWhosTurnInput {
-  connect: GameWhereUniqueInput
-  create: GameCreateWithoutWhosTurnInput
-  update: GameUpdateWithoutWhosTurnDataInput
-  upsert: GameUpsertWithoutWhosTurnInput
 }
 
 input GameUpdateOneWithoutUsersInput {
@@ -173,7 +218,7 @@ input GameUpdateWithoutBoardDataInput {
   id: String
   updatedAt: DateTime
   users: UserUpdateManyWithoutGameInput
-  whosTurn: UserUpdateOneRequiredWithoutWhosTurnOfInput
+  whosTurn: UserUpdateOneRequiredWithoutGameInput
 }
 
 input GameUpdateWithoutUsersDataInput {
@@ -181,7 +226,7 @@ input GameUpdateWithoutUsersDataInput {
   createdAt: DateTime
   id: String
   updatedAt: DateTime
-  whosTurn: UserUpdateOneRequiredWithoutWhosTurnOfInput
+  whosTurn: UserUpdateOneRequiredWithoutGameInput
 }
 
 input GameUpdateWithoutWhosTurnDataInput {
@@ -190,6 +235,11 @@ input GameUpdateWithoutWhosTurnDataInput {
   id: String
   updatedAt: DateTime
   users: UserUpdateManyWithoutGameInput
+}
+
+input GameUpdateWithWhereUniqueWithoutWhosTurnInput {
+  data: GameUpdateWithoutWhosTurnDataInput!
+  where: GameWhereUniqueInput!
 }
 
 input GameUpsertWithoutBoardInput {
@@ -202,9 +252,23 @@ input GameUpsertWithoutUsersInput {
   update: GameUpdateWithoutUsersDataInput!
 }
 
-input GameUpsertWithoutWhosTurnInput {
+input GameUpsertWithWhereUniqueWithoutWhosTurnInput {
   create: GameCreateWithoutWhosTurnInput!
   update: GameUpdateWithoutWhosTurnDataInput!
+  where: GameWhereUniqueInput!
+}
+
+input GameWhereInput {
+  AND: [GameWhereInput!]
+  board: BoardWhereInput
+  createdAt: DateTimeFilter
+  id: StringFilter
+  NOT: [GameWhereInput!]
+  OR: [GameWhereInput!]
+  updatedAt: DateTimeFilter
+  users: UserFilter
+  whosTurn: UserWhereInput
+  whosTurnId: StringFilter
 }
 
 input GameWhereUniqueInput {
@@ -307,6 +371,17 @@ input ScoreUpsertWithoutUserInput {
   update: ScoreUpdateWithoutUserDataInput!
 }
 
+input ScoreWhereInput {
+  AND: [ScoreWhereInput!]
+  id: StringFilter
+  NOT: [ScoreWhereInput!]
+  OR: [ScoreWhereInput!]
+  updatedAt: DateTimeFilter
+  user: UserWhereInput
+  userId: StringFilter
+  value: IntFilter
+}
+
 input ScoreWhereUniqueInput {
   id: String
 }
@@ -329,6 +404,12 @@ input SquareCreateWithoutBoardInput {
   position: Int!
   updatedAt: DateTime
   value: String
+}
+
+input SquareFilter {
+  every: SquareWhereInput
+  none: SquareWhereInput
+  some: SquareWhereInput
 }
 
 input SquareOrderByInput {
@@ -405,6 +486,19 @@ input SquareUpsertWithWhereUniqueWithoutBoardInput {
   where: SquareWhereUniqueInput!
 }
 
+input SquareWhereInput {
+  AND: [SquareWhereInput!]
+  board: BoardWhereInput
+  boardId: StringFilter
+  createdAt: DateTimeFilter
+  id: StringFilter
+  NOT: [SquareWhereInput!]
+  OR: [SquareWhereInput!]
+  position: IntFilter
+  updatedAt: DateTimeFilter
+  value: StringFilter
+}
+
 input SquareWhereUniqueInput {
   id: String
 }
@@ -436,39 +530,35 @@ input UserCreateManyWithoutGameInput {
   create: [UserCreateWithoutGameInput!]
 }
 
-input UserCreateOneWithoutWhosTurnOfInput {
+input UserCreateOneWithoutGameInput {
   connect: UserWhereUniqueInput
-  create: UserCreateWithoutWhosTurnOfInput
+  create: UserCreateWithoutGameInput
 }
 
 input UserCreateWithoutGameInput {
   createdAt: DateTime
+  game: GameCreateOneWithoutUsersInput
   id: String
   name: String!
   score: ScoreCreateOneWithoutUserInput!
   symbol: String!
   updatedAt: DateTime
-  whosTurnOf: GameCreateOneWithoutWhosTurnInput!
 }
 
 input UserCreateWithoutScoreInput {
   createdAt: DateTime
   game: GameCreateOneWithoutUsersInput
+  Game: GameCreateManyWithoutWhosTurnInput
   id: String
   name: String!
   symbol: String!
   updatedAt: DateTime
-  whosTurnOf: GameCreateOneWithoutWhosTurnInput!
 }
 
-input UserCreateWithoutWhosTurnOfInput {
-  createdAt: DateTime
-  game: GameCreateOneWithoutUsersInput
-  id: String
-  name: String!
-  score: ScoreCreateOneWithoutUserInput!
-  symbol: String!
-  updatedAt: DateTime
+input UserFilter {
+  every: UserWhereInput
+  none: UserWhereInput
+  some: UserWhereInput
 }
 
 input UserOrderByInput {
@@ -483,6 +573,7 @@ input UserOrderByInput {
 input UserScalarWhereInput {
   AND: [UserScalarWhereInput!]
   createdAt: DateTimeFilter
+  Game: GameFilter
   gameId: NullableStringFilter
   id: StringFilter
   name: StringFilter
@@ -517,6 +608,13 @@ input UserUpdateManyWithWhereNestedInput {
   where: UserScalarWhereInput!
 }
 
+input UserUpdateOneRequiredWithoutGameInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutGameInput
+  update: UserUpdateWithoutGameDataInput
+  upsert: UserUpsertWithoutGameInput
+}
+
 input UserUpdateOneRequiredWithoutScoreInput {
   connect: UserWhereUniqueInput
   create: UserCreateWithoutScoreInput
@@ -524,39 +622,22 @@ input UserUpdateOneRequiredWithoutScoreInput {
   upsert: UserUpsertWithoutScoreInput
 }
 
-input UserUpdateOneRequiredWithoutWhosTurnOfInput {
-  connect: UserWhereUniqueInput
-  create: UserCreateWithoutWhosTurnOfInput
-  update: UserUpdateWithoutWhosTurnOfDataInput
-  upsert: UserUpsertWithoutWhosTurnOfInput
-}
-
 input UserUpdateWithoutGameDataInput {
   createdAt: DateTime
+  game: GameUpdateOneWithoutUsersInput
   id: String
   name: String
   score: ScoreUpdateOneRequiredWithoutUserInput
   symbol: String
   updatedAt: DateTime
-  whosTurnOf: GameUpdateOneRequiredWithoutWhosTurnInput
 }
 
 input UserUpdateWithoutScoreDataInput {
   createdAt: DateTime
   game: GameUpdateOneWithoutUsersInput
+  Game: GameUpdateManyWithoutWhosTurnInput
   id: String
   name: String
-  symbol: String
-  updatedAt: DateTime
-  whosTurnOf: GameUpdateOneRequiredWithoutWhosTurnInput
-}
-
-input UserUpdateWithoutWhosTurnOfDataInput {
-  createdAt: DateTime
-  game: GameUpdateOneWithoutUsersInput
-  id: String
-  name: String
-  score: ScoreUpdateOneRequiredWithoutUserInput
   symbol: String
   updatedAt: DateTime
 }
@@ -566,20 +647,35 @@ input UserUpdateWithWhereUniqueWithoutGameInput {
   where: UserWhereUniqueInput!
 }
 
+input UserUpsertWithoutGameInput {
+  create: UserCreateWithoutGameInput!
+  update: UserUpdateWithoutGameDataInput!
+}
+
 input UserUpsertWithoutScoreInput {
   create: UserCreateWithoutScoreInput!
   update: UserUpdateWithoutScoreDataInput!
-}
-
-input UserUpsertWithoutWhosTurnOfInput {
-  create: UserCreateWithoutWhosTurnOfInput!
-  update: UserUpdateWithoutWhosTurnOfDataInput!
 }
 
 input UserUpsertWithWhereUniqueWithoutGameInput {
   create: UserCreateWithoutGameInput!
   update: UserUpdateWithoutGameDataInput!
   where: UserWhereUniqueInput!
+}
+
+input UserWhereInput {
+  AND: [UserWhereInput!]
+  createdAt: DateTimeFilter
+  game: GameWhereInput
+  Game: GameFilter
+  gameId: NullableStringFilter
+  id: StringFilter
+  name: StringFilter
+  NOT: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  score: ScoreWhereInput
+  symbol: StringFilter
+  updatedAt: DateTimeFilter
 }
 
 input UserWhereUniqueInput {
