@@ -1,3 +1,5 @@
+/// <reference path="../node_modules/@types/nexus-typegen/index.d.ts" />
+
 import { objectType, mutationType, stringArg, makeSchema, fieldAuthorizePlugin, queryType } from '@nexus/schema';
 import { nexusPrismaPlugin } from 'nexus-prisma';
 import path from 'path';
