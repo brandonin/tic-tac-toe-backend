@@ -2,12 +2,20 @@ import { objectType, mutationType, stringArg, makeSchema, fieldAuthorizePlugin, 
 import { nexusPrismaPlugin } from 'nexus-prisma';
 import path from 'path';
 
+import newGame from './utils/newGame';
 import { IContext } from '.';
 
 const Initialize = objectType({
     name: 'Initialize',
     definition(t) {
         t.field('game', { type: Game });
+    },
+});
+
+const Reset = objectType({
+    name: 'Reset',
+    definition(t) {
+        t.field('board', { type: Board });
     },
 });
 
@@ -29,6 +37,7 @@ const User = objectType({
         t.model.id();
         t.model.name();
         t.model.symbol();
+        t.model.score();
         
         // relations
         t.model.game();
@@ -50,7 +59,7 @@ const Board = objectType({
     name: 'Board',
     definition(t) {
         t.model.id();
-        t.model.squares();
+        t.model.squares({ordering: true});
     },
 });
 
@@ -59,8 +68,10 @@ const Square = objectType({
     definition(t) {
         t.model.id();
         t.model.value();
-        t.model.xPosition();
-        t.model.yPosition();
+        t.model.position();
+        // t.model.xPosition();
+        // t.model.yPosition();
+        t.model.createdAt();
     },
 });
 
@@ -76,6 +87,7 @@ const Query = queryType({
 const Mutation = mutationType({
     definition(t) {
         t.crud.createOneGame();
+        t.crud.updateOneGame();
         t.crud.updateOneSquare();
         t.crud.updateOneScore();
         t.field('initialize', {
@@ -85,24 +97,40 @@ const Mutation = mutationType({
                 username2: stringArg(),
             },
             async resolve (parent, args, ctx: IContext) {
-                let squares = [];
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        squares.push({xPosition: j, yPosition: i});
+                const squares = newGame();
+
+                const user1 = await ctx.prisma.user.create({
+                    data: {
+                        name: args.username1,
+                        symbol: "X",
+                        score: {
+                            create: {
+                                value: 0,
+                            }
+                        }
                     }
-                }
-                // squaresMap = squares.mapctx.prisma.game.create()
+                })
+
                 const game = await ctx.prisma.game.create({
                     data: {
+                        whosTurn: {
+                            connect: {
+                                id: user1.id,
+                            }
+                        },
                         users: {
+                            connect: [{
+                                id: user1.id,
+                            }],
                             create: [
-                                {
-                                    name: args.username1,
-                                    symbol: "X",
-                                },
                                 {
                                     name: args.username2,
                                     symbol: "O",
+                                    score: {
+                                        create: {
+                                            value: 0,
+                                        }
+                                    }
                                 }
                             ]
                         },
@@ -119,6 +147,22 @@ const Mutation = mutationType({
                     game,
                 };
             },
+        });
+        t.field('reset', {
+            type: Reset,
+            args: {
+                boardId: stringArg(),
+            },
+            async resolve (parent, args, ctx: IContext) {
+                const squares = await ctx.prisma.board.findOne({where: { id: args.boardId }}).squares();
+                const squaresId = squares.map(({id}) => id);
+                await ctx.prisma.square.updateMany({ where: { id: { in: squaresId }} , data: { value: "" } });
+                
+                const board = await ctx.prisma.board.findOne({ where: { id: args.boardId } });
+                return  {
+                    board,
+                }
+            }
         })
     },
 });

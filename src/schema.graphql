@@ -4,7 +4,7 @@
 
 type Board {
   id: String!
-  squares(after: SquareWhereUniqueInput, before: SquareWhereUniqueInput, first: Int, last: Int, skip: Int): [Square!]!
+  squares(after: SquareWhereUniqueInput, before: SquareWhereUniqueInput, first: Int, last: Int, orderBy: SquareOrderByInput, skip: Int): [Square!]!
 }
 
 input BoardCreateOneWithoutGameInput {
@@ -165,6 +165,15 @@ input GameScalarWhereInput {
   whosTurnId: StringFilter
 }
 
+input GameUpdateInput {
+  board: BoardUpdateOneRequiredWithoutGameInput
+  createdAt: DateTime
+  id: String
+  updatedAt: DateTime
+  users: UserUpdateManyWithoutGameInput
+  whosTurn: UserUpdateOneRequiredWithoutGameInput
+}
+
 input GameUpdateManyDataInput {
   createdAt: DateTime
   id: String
@@ -195,9 +204,11 @@ input GameUpdateOneRequiredWithoutBoardInput {
   upsert: GameUpsertWithoutBoardInput
 }
 
-input GameUpdateOneRequiredWithoutUsersInput {
+input GameUpdateOneWithoutUsersInput {
   connect: GameWhereUniqueInput
   create: GameCreateWithoutUsersInput
+  delete: Boolean
+  disconnect: Boolean
   update: GameUpdateWithoutUsersDataInput
   upsert: GameUpsertWithoutUsersInput
 }
@@ -282,8 +293,24 @@ input IntFilter {
 type Mutation {
   createOneGame(data: GameCreateInput!): Game!
   initialize(username1: String, username2: String): Initialize!
+  reset(boardId: String): Reset!
+  updateOneGame(data: GameUpdateInput!, where: GameWhereUniqueInput!): Game
   updateOneScore(data: ScoreUpdateInput!, where: ScoreWhereUniqueInput!): Score
   updateOneSquare(data: SquareUpdateInput!, where: SquareWhereUniqueInput!): Square
+}
+
+input NullableStringFilter {
+  contains: String
+  endsWith: String
+  equals: String
+  gt: String
+  gte: String
+  in: [String!]
+  lt: String
+  lte: String
+  not: String
+  notIn: [String!]
+  startsWith: String
 }
 
 enum OrderByArg {
@@ -298,37 +325,25 @@ type Query {
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, orderBy: UserOrderByInput, skip: Int): [User!]!
 }
 
+type Reset {
+  board: Board!
+}
+
 type Score {
   id: String!
   user: User!
   value: Int!
 }
 
-input ScoreCreateManyWithoutUserInput {
-  connect: [ScoreWhereUniqueInput!]
-  create: [ScoreCreateWithoutUserInput!]
+input ScoreCreateOneWithoutUserInput {
+  connect: ScoreWhereUniqueInput
+  create: ScoreCreateWithoutUserInput
 }
 
 input ScoreCreateWithoutUserInput {
   id: String
   updatedAt: DateTime
   value: Int
-}
-
-input ScoreFilter {
-  every: ScoreWhereInput
-  none: ScoreWhereInput
-  some: ScoreWhereInput
-}
-
-input ScoreScalarWhereInput {
-  AND: [ScoreScalarWhereInput!]
-  id: StringFilter
-  NOT: [ScoreScalarWhereInput!]
-  OR: [ScoreScalarWhereInput!]
-  updatedAt: DateTimeFilter
-  userId: StringFilter
-  value: IntFilter
 }
 
 input ScoreUpdateInput {
@@ -338,27 +353,11 @@ input ScoreUpdateInput {
   value: Int
 }
 
-input ScoreUpdateManyDataInput {
-  id: String
-  updatedAt: DateTime
-  value: Int
-}
-
-input ScoreUpdateManyWithoutUserInput {
-  connect: [ScoreWhereUniqueInput!]
-  create: [ScoreCreateWithoutUserInput!]
-  delete: [ScoreWhereUniqueInput!]
-  deleteMany: [ScoreScalarWhereInput!]
-  disconnect: [ScoreWhereUniqueInput!]
-  set: [ScoreWhereUniqueInput!]
-  update: [ScoreUpdateWithWhereUniqueWithoutUserInput!]
-  updateMany: [ScoreUpdateManyWithWhereNestedInput!]
-  upsert: [ScoreUpsertWithWhereUniqueWithoutUserInput!]
-}
-
-input ScoreUpdateManyWithWhereNestedInput {
-  data: ScoreUpdateManyDataInput!
-  where: ScoreScalarWhereInput!
+input ScoreUpdateOneRequiredWithoutUserInput {
+  connect: ScoreWhereUniqueInput
+  create: ScoreCreateWithoutUserInput
+  update: ScoreUpdateWithoutUserDataInput
+  upsert: ScoreUpsertWithoutUserInput
 }
 
 input ScoreUpdateWithoutUserDataInput {
@@ -367,15 +366,9 @@ input ScoreUpdateWithoutUserDataInput {
   value: Int
 }
 
-input ScoreUpdateWithWhereUniqueWithoutUserInput {
-  data: ScoreUpdateWithoutUserDataInput!
-  where: ScoreWhereUniqueInput!
-}
-
-input ScoreUpsertWithWhereUniqueWithoutUserInput {
+input ScoreUpsertWithoutUserInput {
   create: ScoreCreateWithoutUserInput!
   update: ScoreUpdateWithoutUserDataInput!
-  where: ScoreWhereUniqueInput!
 }
 
 input ScoreWhereInput {
@@ -394,10 +387,10 @@ input ScoreWhereUniqueInput {
 }
 
 type Square {
+  createdAt: DateTime!
   id: String!
+  position: Int!
   value: String!
-  xPosition: Int!
-  yPosition: Int!
 }
 
 input SquareCreateManyWithoutBoardInput {
@@ -406,10 +399,11 @@ input SquareCreateManyWithoutBoardInput {
 }
 
 input SquareCreateWithoutBoardInput {
+  createdAt: DateTime
   id: String
+  position: Int!
+  updatedAt: DateTime
   value: String
-  xPosition: Int!
-  yPosition: Int!
 }
 
 input SquareFilter {
@@ -418,30 +412,42 @@ input SquareFilter {
   some: SquareWhereInput
 }
 
+input SquareOrderByInput {
+  boardId: OrderByArg
+  createdAt: OrderByArg
+  id: OrderByArg
+  position: OrderByArg
+  updatedAt: OrderByArg
+  value: OrderByArg
+}
+
 input SquareScalarWhereInput {
   AND: [SquareScalarWhereInput!]
   boardId: StringFilter
+  createdAt: DateTimeFilter
   id: StringFilter
   NOT: [SquareScalarWhereInput!]
   OR: [SquareScalarWhereInput!]
+  position: IntFilter
+  updatedAt: DateTimeFilter
   value: StringFilter
-  xPosition: IntFilter
-  yPosition: IntFilter
 }
 
 input SquareUpdateInput {
   board: BoardUpdateOneRequiredWithoutSquaresInput
+  createdAt: DateTime
   id: String
+  position: Int
+  updatedAt: DateTime
   value: String
-  xPosition: Int
-  yPosition: Int
 }
 
 input SquareUpdateManyDataInput {
+  createdAt: DateTime
   id: String
+  position: Int
+  updatedAt: DateTime
   value: String
-  xPosition: Int
-  yPosition: Int
 }
 
 input SquareUpdateManyWithoutBoardInput {
@@ -462,10 +468,11 @@ input SquareUpdateManyWithWhereNestedInput {
 }
 
 input SquareUpdateWithoutBoardDataInput {
+  createdAt: DateTime
   id: String
+  position: Int
+  updatedAt: DateTime
   value: String
-  xPosition: Int
-  yPosition: Int
 }
 
 input SquareUpdateWithWhereUniqueWithoutBoardInput {
@@ -483,12 +490,13 @@ input SquareWhereInput {
   AND: [SquareWhereInput!]
   board: BoardWhereInput
   boardId: StringFilter
+  createdAt: DateTimeFilter
   id: StringFilter
   NOT: [SquareWhereInput!]
   OR: [SquareWhereInput!]
+  position: IntFilter
+  updatedAt: DateTimeFilter
   value: StringFilter
-  xPosition: IntFilter
-  yPosition: IntFilter
 }
 
 input SquareWhereUniqueInput {
@@ -510,9 +518,10 @@ input StringFilter {
 }
 
 type User {
-  game: Game!
+  game: Game
   id: String!
   name: String!
+  score: Score!
   symbol: String!
 }
 
@@ -528,17 +537,17 @@ input UserCreateOneWithoutGameInput {
 
 input UserCreateWithoutGameInput {
   createdAt: DateTime
-  game: GameCreateOneWithoutUsersInput!
+  game: GameCreateOneWithoutUsersInput
   id: String
   name: String!
-  Score: ScoreCreateManyWithoutUserInput
+  score: ScoreCreateOneWithoutUserInput!
   symbol: String!
   updatedAt: DateTime
 }
 
 input UserCreateWithoutScoreInput {
   createdAt: DateTime
-  game: GameCreateOneWithoutUsersInput!
+  game: GameCreateOneWithoutUsersInput
   Game: GameCreateManyWithoutWhosTurnInput
   id: String
   name: String!
@@ -565,12 +574,11 @@ input UserScalarWhereInput {
   AND: [UserScalarWhereInput!]
   createdAt: DateTimeFilter
   Game: GameFilter
-  gameId: StringFilter
+  gameId: NullableStringFilter
   id: StringFilter
   name: StringFilter
   NOT: [UserScalarWhereInput!]
   OR: [UserScalarWhereInput!]
-  Score: ScoreFilter
   symbol: StringFilter
   updatedAt: DateTimeFilter
 }
@@ -616,17 +624,17 @@ input UserUpdateOneRequiredWithoutScoreInput {
 
 input UserUpdateWithoutGameDataInput {
   createdAt: DateTime
-  game: GameUpdateOneRequiredWithoutUsersInput
+  game: GameUpdateOneWithoutUsersInput
   id: String
   name: String
-  Score: ScoreUpdateManyWithoutUserInput
+  score: ScoreUpdateOneRequiredWithoutUserInput
   symbol: String
   updatedAt: DateTime
 }
 
 input UserUpdateWithoutScoreDataInput {
   createdAt: DateTime
-  game: GameUpdateOneRequiredWithoutUsersInput
+  game: GameUpdateOneWithoutUsersInput
   Game: GameUpdateManyWithoutWhosTurnInput
   id: String
   name: String
@@ -660,12 +668,12 @@ input UserWhereInput {
   createdAt: DateTimeFilter
   game: GameWhereInput
   Game: GameFilter
-  gameId: StringFilter
+  gameId: NullableStringFilter
   id: StringFilter
   name: StringFilter
   NOT: [UserWhereInput!]
   OR: [UserWhereInput!]
-  Score: ScoreFilter
+  score: ScoreWhereInput
   symbol: StringFilter
   updatedAt: DateTimeFilter
 }
