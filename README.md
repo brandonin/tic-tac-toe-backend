@@ -1,4 +1,4 @@
-# Thirty Madison Project
+# Tic Tac Toe Example Project
 
 In order to get it working, all you need to do is have docker running, run `docker-compose up` and `yarn prisma:push`.
 
